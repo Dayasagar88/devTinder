@@ -12,12 +12,10 @@ const userSchema = new mongoose.Schema(
     lastName: {
       type: String,
     },
-    mobileNumber: {
-      type: Number,
-      max: 10,
-      unique: true,
-      trim: true,
-    },
+    // mobileNumber: {
+    //   type: Number,
+    //   max: 10,
+    // },
     emailId: {
       type: String,
       lowercase: true,
@@ -27,7 +25,7 @@ const userSchema = new mongoose.Schema(
       validate(value) {
         if (!validator.isEmail(value)) {
           throw new Error("Not a valid Email address " + value);
-        }
+        } 
       },
     },
     password: {
@@ -36,7 +34,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       validate(value) {
         if (!validator.isStrongPassword(value)) {
-          throw new Error("Enter a strong password" + value);
+          throw new Error("Enter a strong password " + value);
         }
       },
     },
