@@ -1,21 +1,22 @@
 const express = require("express");
 const connectDB = require("./config/database");
 const { User } = require("./models/userModel");
+const errorHandler = require("./config/errorHandler");
 
 const app = express();
 
 app.use(express.json());
 
-app.post("/signup", async (req, res) => {
+app.post("/signup", async (req, res, next) => {
   const user = new User(req.body);
   try {
     if (Array.isArray(req.body.skills) && req.body.skills.length > 10) {
       return res.status(400).send("400 Bad Request: Maximum 10 skills allowed");
     }
     await user.save();
-     return res.status(200).json({ message: "User saved successfully!", user });
+    return res.status(200).json({ message: "User saved successfully!", user });
   } catch (err) {
-    res.status(400).send("Error saving the user : " + err);
+    next(err); //forward the error to middleware
   }
 });
 
@@ -73,7 +74,7 @@ app.delete("/delete-user/:id", async (req, res) => {
   }
 });
 
-app.patch("/update-user/:id", async (req, res) => {
+app.patch("/update-user/:id", async (req, res, next) => {
   const userId = req.params.id;
 
   try {
@@ -89,6 +90,7 @@ app.patch("/update-user/:id", async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
       returnDocument: "after",
+      runValidators: true,
     });
 
     if (!updatedUser) {
@@ -99,10 +101,12 @@ app.patch("/update-user/:id", async (req, res) => {
       .status(200)
       .json({ message: "User updated successfully", updatedUser });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Something went wrong");
+    next(error); //forward the error to middleware
   }
 });
+
+app.use(errorHandler);
+
 
 connectDB()
   .then(() => {
