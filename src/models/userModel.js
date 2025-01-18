@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema(
   {
@@ -25,7 +27,7 @@ const userSchema = new mongoose.Schema(
       validate(value) {
         if (!validator.isEmail(value)) {
           throw new Error("Not a valid Email address " + value);
-        } 
+        }
       },
     },
     password: {
@@ -40,11 +42,11 @@ const userSchema = new mongoose.Schema(
     },
     age: {
       type: Number,
-      validate(value){
-        if(value < 18){
-          throw new Error("Age must be 18 or greater to use DevTinder")
+      validate(value) {
+        if (value < 18) {
+          throw new Error("Age must be 18 or greater to use DevTinder");
         }
-      }
+      },
     },
     gender: {
       type: String,
@@ -77,6 +79,23 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.methods.getJWT = async function () {
+  const user = this;
+  const token = await jwt.sign({ _id: user._id }, "Devtinder@123", {
+    expiresIn: "7d",
+  });
+  return token;
+};
+
+
+userSchema.methods.validatePassword = async function (inputPasswordByUser) {
+  const user = this;
+  const passwordHash = user.password;
+
+  const isPasswordCorrect = await bcrypt.compare(inputPasswordByUser, passwordHash);
+  return isPasswordCorrect; 
+};
 
 const User = mongoose.model("User", userSchema);
 
