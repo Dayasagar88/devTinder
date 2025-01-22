@@ -4,7 +4,8 @@ const errorHandler = require("./config/errorHandler");
 const cookieParser = require("cookie-parser");
 const authRouter = require("./routers/auth")
 const profileRouter = require("./routers/profile")
-const requestRouter = require("./routers/request")
+const requestRouter = require("./routers/request");
+const userRouter = require("./routers/user");
 
 const app = express();
 
@@ -14,7 +15,8 @@ app.use(cookieParser());
 
 app.use("/", authRouter);    
 app.use("/", profileRouter);    
-app.use("/", requestRouter);    
+app.use("/", requestRouter);  
+app.use("/", userRouter)  
 
 
 app.use(errorHandler);
