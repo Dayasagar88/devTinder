@@ -7,8 +7,8 @@ const userAuth = async (req, res, next) => {
 
     if (!token) {
       return res
-        .status(400)
-        .json({ message: "Invalid request", success: false });
+        .status(401)
+        .json({ message: "Unauthorized access!", success: false });
     }
 
     const decodedToken = await jwt.verify(token, "Devtinder@123");
@@ -31,7 +31,7 @@ const userAuth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    res.status(400).send("ERROR : " + error.message);
+    res.status(400).send("ERROR : " + error.message); 
   }
 };
 module.exports = userAuth;

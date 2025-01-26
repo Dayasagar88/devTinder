@@ -8,13 +8,15 @@ const bcrypt = require("bcrypt");
 profileRouter.get("/profile", userAuth, async (req, res, next) => {
   try {
     const user = req.user;
-    res.status(200).json(user);
+    res
+      .status(200)
+      .json({ message: "Profile accessed!", success: true, user });
   } catch (error) {
     next(error);
   }
 });
 
-profileRouter.patch("/profile/edit", userAuth, async (req, res, next) => {
+profileRouter.post("/profile/edit", userAuth, async (req, res, next) => {
   try {
     if (!validateEditProfileDate(req)) {
       return res
@@ -33,6 +35,7 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res, next) => {
       loggedInUser,
     });
   } catch (error) {
+    console.log(error)
     next(error);
   }
 });

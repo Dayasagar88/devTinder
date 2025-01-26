@@ -5,7 +5,7 @@ const userAuth = require("../middlewares/auth");
 const { ConnectionRequest } = require("../models/connectionRequestModel");
 const { set } = require("mongoose");
 
-const USER_SAFE_DATA = "firstName lastName age gender photoUrl skills";
+const USER_SAFE_DATA = "firstName lastName profession age gender photoUrl skills about";
 
 userRouter.get("/user/request/received", userAuth, async (req, res, next) => {
   try {
@@ -17,8 +17,8 @@ userRouter.get("/user/request/received", userAuth, async (req, res, next) => {
 
     if (connectionRequestReceived.length < 1) {
       return res
-        .status(404)
-        .json({ message: "No pending connection request!", success: false });
+        .status(200)
+        .json({ message: "No pending connection request!", success: true });
     }
 
     res.status(200).json({
@@ -53,13 +53,13 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 
     if (connectionList.length < 1) {
       return res
-        .status(404)
-        .json({ message: "No connections yet!", success: false });
+        .status(200)
+        .json({ message: "No connections yet!", success: true });
     }
 
     res.status(200).json({
       message: "Connection fetched successfully!",
-      success: false,
+      success: true,
       connectionList,
     });
   } catch (error) {
@@ -72,7 +72,7 @@ userRouter.get("/user/feed", userAuth, async (req, res, next) => {
     const loggedInUser = req.user;
 
     let page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 10;
+    let limit = parseInt(req.query.limit) || 5;
     limit = limit > 50 ? 50 : limit;
 
     if (page < 0) {

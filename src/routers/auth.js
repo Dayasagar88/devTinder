@@ -5,6 +5,19 @@ const { User } = require("../models/userModel");
 const validator = require("validator");
 const { validateSignupData } = require("../utils/validator");
 
+const USER_DATA = [
+  "firstName",
+  "lastName",
+  "profession",
+  "age",
+  "skills",
+  "photoUrl",
+  "gender",
+  "about",
+  "emailId",
+  "password"
+];
+
 //Signup api
 authRouter.post("/signup", async (req, res, next) => {
   try {
@@ -43,10 +56,10 @@ authRouter.post("/login", async (req, res, next) => {
   try {
     const { emailId, password } = req.body;
     if (!validator.isEmail(emailId)) {
-      return res.status(400).json({ message: "Enter a valid email address" });
+      return res.status(400).json({ message: "Enter a valid email address" , success : false});
     }
 
-    const user = await User.findOne({ emailId });
+    const user = await User.findOne({ emailId })
     if (user) {
       //compare password || check password
       const isPasswordCorrect = await user.validatePassword(password);
@@ -60,6 +73,7 @@ authRouter.post("/login", async (req, res, next) => {
         return res.status(200).json({
           message: `Welcome back ${user.firstName} ${user.lastName}`,
           success: true,
+          user
         });
       } else {
         return res

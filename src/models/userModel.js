@@ -5,14 +5,23 @@ const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema(
   {
+    new: {
+      type: Boolean,
+      default: true,
+    },
     firstName: {
       type: String,
       minLength: 3,
-      maxLength: 50,
+      maxLength: 25,
       required: true,
     },
     lastName: {
       type: String,
+    },
+    profession: {
+      type: String,
+      minLength: 3,
+      maxLength: 25,
     },
     // mobileNumber: {
     //   type: Number,
@@ -51,11 +60,11 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       validate(value) {
-        if (!["male", "female", "others"].includes(value)) {
+        if (!["Male", "Female", "Others"].includes(value)) {
           throw new Error("Gender data is not valid");
         }
       },
-      lowercase: true,
+      // lowercase: true,
     },
     photoUrl: {
       type: String,
@@ -71,7 +80,7 @@ const userSchema = new mongoose.Schema(
     about: {
       type: String,
       default: "Tell something about yourself...",
-      maxLength: 250,
+      maxLength: 500,
     },
     skills: {
       type: [String],
@@ -88,13 +97,15 @@ userSchema.methods.getJWT = async function () {
   return token;
 };
 
-
 userSchema.methods.validatePassword = async function (inputPasswordByUser) {
   const user = this;
   const passwordHash = user.password;
 
-  const isPasswordCorrect = await bcrypt.compare(inputPasswordByUser, passwordHash);
-  return isPasswordCorrect; 
+  const isPasswordCorrect = await bcrypt.compare(
+    inputPasswordByUser,
+    passwordHash
+  );
+  return isPasswordCorrect;
 };
 
 const User = mongoose.model("User", userSchema);
